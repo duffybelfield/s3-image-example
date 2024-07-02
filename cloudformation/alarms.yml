@@ -1,3 +1,5 @@
+# These are example alarms that would be associated to the lambda and then any alarms would 
+# be sent to a SNS queue (separate stack outside of the lambda)
 Resources:
   LambdaErrorsAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -19,7 +21,7 @@ Resources:
       EvaluationPeriods: 6
       Dimensions:
         - Name: FunctionName
-          Value: !Ref ObjectLambdaFunction
+          Value: !Ref ThumbnailLambdaFunction
       MetricName: Errors
       Namespace: AWS/Lambda
       Period: 300
@@ -47,7 +49,7 @@ Resources:
       EvaluationPeriods: 6
       Dimensions:
         - Name: FunctionName
-          Value: !Ref ObjectLambdaFunction
+          Value: !Ref ThumbnailLambdaFunction
       MetricName: Throttles
       Namespace: AWS/Lambda
       Period: 300
@@ -74,7 +76,7 @@ Resources:
       DatapointsToAlarm: 3
       Dimensions:
         - Name: FunctionName
-          Value: !Ref ObjectLambdaFunction
+          Value: !Ref ThumbnailLambdaFunction
       EvaluationPeriods: 6
       ExtendedStatistic: p99
       MetricName: Duration
