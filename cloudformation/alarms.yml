@@ -1,0 +1,84 @@
+Resources:
+  LambdaErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ObjectLambdaFunction}-lambda-alarms-errors"
+      AlarmActions:
+        - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
+      AlarmDescription: |
+
+        Insert explanation of object lambda errors
+
+        Cause:
+        API lambda errors exceed 0
+
+        Further information:
+        <insert url to confluence page on what to do>
+      ComparisonOperator: GreaterThanThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 6
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ObjectLambdaFunction
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 300
+      Statistic: Sum
+      Threshold: 0
+      TreatMissingData: notBreaching
+
+  LambdaThrottlesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ObjectLambdaFunction}-throttles"
+      AlarmActions:
+        - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
+      AlarmDescription: |
+
+        Explain throttles
+
+        Cause:
+        API lambda throttles exceed 0
+
+        Further information:
+        <insert url to confluence page on what to do>
+      ComparisonOperator: GreaterThanThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 6
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ObjectLambdaFunction
+      MetricName: Throttles
+      Namespace: AWS/Lambda
+      Period: 300
+      Statistic: Sum
+      Threshold: 0
+      TreatMissingData: notBreaching
+
+  P99LatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ObjectLambdaFunction}-user-p99-latency"
+      AlarmActions:
+        - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
+      AlarmDescription: |
+
+        Insert better description for latency
+
+        Cause:
+        - User API p99 latency alarm >= 2s
+
+        Further information:
+        <insert url to confluence page on what to do>
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 3
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ObjectLambdaFunction
+      EvaluationPeriods: 6
+      ExtendedStatistic: p99
+      MetricName: Duration
+      Namespace: AWS/Lambda
+      Period: 300
+      Threshold: 2000
+      TreatMissingData: notBreaching

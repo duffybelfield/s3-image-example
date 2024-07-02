@@ -1,0 +1,65 @@
+Resources:
+  ImageResizeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      RoleName: ImageResizeRole # required if you want to use 'serverless deploy --function' later on
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      # note that these rights are needed if you want your function to be able to communicate with resources within your vpc
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: ServicePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow # Permissions limited to only specific access to resource / actions.
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - 'Fn::Join':
+                    - ':'
+                    -
+                      - 'arn:aws:logs'
+                      - Ref: 'AWS::Region'
+                      - Ref: 'AWS::AccountId'
+                      - 'log-group'
+                      - Ref: ThumbnailLogGroup
+              - Effect: "Allow"
+                Action:
+                  - "s3:ObjectCreated"
+                  - "s3:GetObject*"
+                Resource:
+                - Fn::Join:
+                  - ''
+                  - - 'arn:'
+                    - Ref: AWS::Partition
+                    - ":s3:::"
+                    - Ref: ReceiveBucket
+                    - "/*"
+                - Fn::Join:
+                  - ''
+                  - - 'arn:'
+                    - Ref: AWS::Partition
+                    - ":s3:::"
+                    - Ref: ReceiveBucket
+              - Effect: "Allow"
+                Action:
+                  - "s3:PutObject"
+                Resource:
+                - Fn::Join:
+                  - ''
+                  - - 'arn:'
+                    - Ref: AWS::Partition
+                    - ":s3:::"
+                    - Ref: ThumbnailBucket
+                    - "/*"

@@ -1,0 +1,71 @@
+Resources:
+  ReceiveBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub example-receiving-bucket-${AWS::AccountId}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration: # AWS Foundational Security Best Practices v1.0.0 S3.8 https://docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration: # Removes files after 30 days (reduce cost)
+        Rules:
+          - Id: Delete files
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            ExpirationInDays: 30
+            Status: Enabled
+
+  ReceiveBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref ReceiveBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5 https://docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5
+          Effect: Deny
+          Principal: '*'
+          Action: 's3:*'
+          Resource:
+          - !GetAtt 'ReceiveBucket.Arn'
+          - !Sub '${ReceiveBucket.Arn}/*'
+          Condition:
+            Bool:
+              'aws:SecureTransport': false
+
+  ThumbnailBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub example-thumbnail-bucket-${AWS::AccountId}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration: # AWS Foundational Security Best Practices v1.0.0 S3.5 https://docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  ThumbnailBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref ThumbnailBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5 https://docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5
+          Effect: Deny
+          Principal: '*'
+          Action: 's3:*'
+          Resource:
+          - !GetAtt 'ThumbnailBucket.Arn'
+          - !Sub '${ThumbnailBucket.Arn}/*'
+          Condition:
+            Bool:
+              'aws:SecureTransport': false

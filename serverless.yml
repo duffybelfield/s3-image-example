@@ -1,0 +1,38 @@
+service: s3-image-resizer
+useDotenv: true
+frameworkVersion: '3'
+provider:
+  name: aws
+  logRetentionInDays: 7
+  stackTags:
+    DataClassification: standard
+    Environment: staging
+    Name: s3-image-resizer-${opt:stage}
+    Owner: ${opt:stage}-owner
+    Product: ${opt:stage}-product
+    Service: ${opt:stage}-service
+  runtime: python3.9
+  region: ${env:region}
+  timeout: 10
+  memorySize: 128
+  vpc: # [Lambda.5] VPC Lambda functions should operate in multiple Availability Zones - https://docs.aws.amazon.com/securityhub/latest/userguide/lambda-controls.html#lambda-5
+    - ${cf:vpc3az.SubnetAPrivate} # Private so Lambda endpoint not available to internet.
+    - ${cf:vpc3az.SubnetBPrivate}
+    - ${cf:vpc3az.SubnetCPrivate}
+  role: ImageResizeRole
+functions:
+  thumbnail:
+    handler: src/handler.s3_thumbnail_generator
+    layers:
+      - arn:aws:lambda:eu-west-1:770693421928:layer:Klayers-p39-pillow:1
+    environment:
+      THUMBNAIL_BUCKET: example-thumbnail-bucket-${env:accountid}
+    events:
+      - s3:
+          bucket: example-receiving-bucket-${env:accountid}
+          event: s3:ObjectCreated:*
+          existing: true
+
+resources:
+  - ${file(cloudformation/buckets.yml)}
+  - ${file(cloudformation/iam.yml)}
