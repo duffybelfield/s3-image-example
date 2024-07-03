@@ -38,8 +38,8 @@ functions:
           event: s3:ObjectCreated:*
           existing: true
 
-plugins:
-  - serverless-offline # For mocking s3 services for integration tests - https://www.npmjs.com/package/serverless-offline
+# plugins:
+#   - serverless-offline # For mocking s3 services for integration tests - https://www.npmjs.com/package/serverless-offline
 
 resources:
   - ${file(cloudformation/buckets.yml)}
