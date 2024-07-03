@@ -12,13 +12,18 @@ provider:
     Product: ${opt:stage}-product
     Service: ${opt:stage}-service
   runtime: python3.9
+  tracing: # https://docs.aws.amazon.com/lambda/latest/dg/python-tracing.html
+    lambda: true
   region: ${env:region}
   timeout: 10
   memorySize: 128
   vpc: # [Lambda.5] VPC Lambda functions should operate in multiple Availability Zones - https://docs.aws.amazon.com/securityhub/latest/userguide/lambda-controls.html#lambda-5
-    - ${cf:vpc3az.SubnetAPrivate} # Private so Lambda endpoint not available to internet.
-    - ${cf:vpc3az.SubnetBPrivate}
-    - ${cf:vpc3az.SubnetCPrivate}
+    securityGroupIds:
+      - ${cf:vpc-endpoints-s3.SubnetAPrivate}
+    subnetIds:
+      - ${cf:vpc3az.SubnetAPrivate} # Private so Lambda endpoint not available to internet.
+      - ${cf:vpc3az.SubnetBPrivate}
+      - ${cf:vpc3az.SubnetCPrivate}
   role: ImageResizeRole
 functions:
   thumbnail:
@@ -32,6 +37,9 @@ functions:
           bucket: example-receiving-bucket-${env:accountid}
           event: s3:ObjectCreated:*
           existing: true
+
+plugins:
+  - serverless-offline # For mocking s3 services for integration tests - https://www.npmjs.com/package/serverless-offline
 
 resources:
   - ${file(cloudformation/buckets.yml)}

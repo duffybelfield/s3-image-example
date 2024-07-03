@@ -8,6 +8,25 @@ This serverless project uses a lambda built with Python and a lambda layer (Pill
 - serverless
 - python3.9
 
+# External Cloudformation templates required within the account
+- vpc3az
+- - Defines the vpc, routes, nats etc.
+- vpc-s3-endpoint
+- - Defines vpc endpoint for s3 so that requests to s3 API are completed over an internet network
+- alert
+- - Deploys SNS topics
+- slack
+- - Deploys configuration to push SNS notifications to slack
+
+# Cloudformation templates
+- Alarms
+- - Example Lambda alarms that can be used
+- Buckets
+- - Buckets required for example with bucket policies
+- IAM
+- - Minimal permission role and policy
+
+
 # Deployment
 - serverless deploy --stage example
 
