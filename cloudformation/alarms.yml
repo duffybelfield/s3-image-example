@@ -4,7 +4,7 @@ Resources:
   LambdaErrorsAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: !Sub "${ObjectLambdaFunction}-lambda-alarms-errors"
+      AlarmName: !Sub "${ThumbnailLambdaFunction}-lambda-alarms-errors"
       AlarmActions:
         - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
       AlarmDescription: |
@@ -32,7 +32,7 @@ Resources:
   LambdaThrottlesAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: !Sub "${ObjectLambdaFunction}-throttles"
+      AlarmName: !Sub "${ThumbnailLambdaFunction}-throttles"
       AlarmActions:
         - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
       AlarmDescription: |
@@ -60,7 +60,7 @@ Resources:
   P99LatencyAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: !Sub "${ObjectLambdaFunction}-user-p99-latency"
+      AlarmName: !Sub "${ThumbnailLambdaFunction}-user-p99-latency"
       AlarmActions:
         - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
       AlarmDescription: |
