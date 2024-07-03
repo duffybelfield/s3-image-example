@@ -18,8 +18,8 @@ provider:
   timeout: 10
   memorySize: 128
   vpc: # [Lambda.5] VPC Lambda functions should operate in multiple Availability Zones - https://docs.aws.amazon.com/securityhub/latest/userguide/lambda-controls.html#lambda-5
-    securityGroupIds:
-      - ${cf:vpc-endpoints-s3.SubnetAPrivate}
+    # securityGroupIds: - to be deployed separately, required for Lambda within a VPC.
+    #   - ${cf:sg-client.ClientSecurityGroup}
     subnetIds:
       - ${cf:vpc3az.SubnetAPrivate} # Private so Lambda endpoint not available to internet.
       - ${cf:vpc3az.SubnetBPrivate}

@@ -17,6 +17,8 @@ This serverless project uses a lambda built with Python and a lambda layer (Pill
 - - Deploys SNS topics
 - slack
 - - Deploys configuration to push SNS notifications to slack
+- sg-client
+- - Manages the security group client ID for the Lambda stack (required for VPC deployment)
 
 # Cloudformation templates
 - Alarms
